@@ -1,0 +1,24 @@
+"""
+(C) 1995-2023 Epicor Software Corporation. All Rights Reserved.
+
+The copyright owner has not given any authority for any publication
+of this work.  This work contains valuable trade secrets of Epicor
+and must be maintained in confidence.  Use of this work is governed
+by the terms and conditions of a license agreement with Epicor.
+
+"""
+
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from .base import *
+
+
+# -----------------------------------------------------------------------------
+# --- Override Settings here.
+# -----------------------------------------------------------------------------
+DEBUG = True
+
+###############################################################################
+### SERVICE SETTINGS                                                        ###
+###############################################################################
+GATEWAY_URL = os.environ.get("GATEWAY_URL", "https://gateway-dev.toogoerp.net")
