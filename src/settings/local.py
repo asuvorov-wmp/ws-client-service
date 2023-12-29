@@ -11,9 +11,9 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE":   "django.db.backends.postgresql",
-        "NAME":     os.environ.get("DB_NAME", "epa"),
-        "USER":     os.environ.get("DB_USER", "epa"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "epa"),
+        "NAME":     os.environ.get("DB_NAME", "ws_demo"),
+        "USER":     os.environ.get("DB_USER", "ws_demo"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "ws_demo"),
         "HOST":     os.environ.get("DB_HOST", "db"),
         "PORT":     os.environ.get("DB_PORT", 5432),
     }

@@ -103,9 +103,6 @@ class ChannelStreamHandler(WebsocketStreamHandler):
 
     def __init__(self, *args, **kwargs) -> None:
         """Constructor."""
-        self.epa_sm = EPAStateMachine()
-        self.epa_wf = EPAWorkflow()
-
         super().__init__( *args, **kwargs)
 
     async def perform_receive(self, content: dict, reply_channel: str=None, **kwargs) -> None:

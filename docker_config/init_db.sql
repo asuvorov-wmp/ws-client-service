@@ -1,4 +1,4 @@
-SELECT 'CREATE DATABASE epa'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'epa')\gexec
+SELECT 'CREATE DATABASE ws_demo'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ws_demo')\gexec
 
-CREATE USER epa WITH PASSWORD 'epa' CREATEDB;
+CREATE USER ws_demo WITH PASSWORD 'ws_demo' CREATEDB;

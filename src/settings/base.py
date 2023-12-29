@@ -101,8 +101,6 @@ TEMPLATES = [
         "BACKEND":  "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             os.path.join(PROJECT_PATH, "templates/"),
-            os.path.join(PROJECT_PATH, "templates/emails/"),
-            os.path.join(PROJECT_PATH, "templates/cyborg/"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -284,5 +282,5 @@ CHANNEL_LAYERS = {
 
 WEBSOCKET_STREAM_HANDLERS = {
     "channel":      "server.handlers.ChannelStreamHandler",
-    "ping":         "lib.handlers.PingStreamHandler",
+    "ping":         "server.handlers.PingStreamHandler",
 }
