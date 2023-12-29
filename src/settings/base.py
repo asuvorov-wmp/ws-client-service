@@ -1,13 +1,3 @@
-"""
-(C) 1995-2023 Epicor Software Corporation. All Rights Reserved.
-
-The copyright owner has not given any authority for any publication
-of this work.  This work contains valuable trade secrets of Epicor
-and must be maintained in confidence.  Use of this work is governed
-by the terms and conditions of a license agreement with Epicor.
-
-"""
-
 import os
 import os.path
 
@@ -160,8 +150,6 @@ WSGI_APPLICATION = "wsgi.application"
 
 INSTALLED_APPS = (
     # --- Django Apps.
-    # "grappelli",
-
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -172,20 +160,10 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
 
     # --- 3rd Party Apps.
-    # "rangefilter",
 
     # --- Project Apps.
-    "adrf",
-    "api",
-    "app",
-    "archive",
-    "core",
-    "integrations",
-    "lib",
-    "rest_framework_proxy",
-    "sales",
-    "service",
-    "tests",
+    "client",
+    "server",
 )
 
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
@@ -279,86 +257,12 @@ LOGGING = {
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
-# AUTH_USER_MODEL = "accounts.User"
-
-
-###############################################################################
-### SERVICE SETTINGS                                                        ###
-###############################################################################
-MANAGEMENT_SECRET_KEY = "176261cf87655d488357aeb666038b4a5a02f95b"
-OUR_APPLICATION_NAME = "ERC"
-TOOGO_VERSION = config("TOOGO_VERSION", "125.139.1399.8234")
-
-OFFLINE_MODE = config("OFFLINE_MODE", "false").lower() == "true"
-OFFLINE_SYSTEM_IDENTIFIER = config("OFFLINE_SYSTEM_IDENTIFIER", "")
-CLOUDFRONT_DOMAIN = config("CLOUDFRONT_DOMAIN", None)
-
-EPA_CLOUD_INSTANCE = config("EPA_CLOUD_INSTANCE", "wss://epa-ws.toogoerp.net")
-EPA_MPOS_INSTANCE = config("EPA_MPOS_INSTANCE", "https://mpos-dev.eaglesoa.com")
-EPA_HUB_INSTANCE = config("EPA_HUB_INSTANCE", "https://epa-hub.toogoerp.net")
-
-GATEWAY_URL = config("GATEWAY_URL", "https://gateway.toogoerp.net")
-GATEWAY_TOKEN = config("GATEWAY_TOKEN", MANAGEMENT_SECRET_KEY)
-
-###############################################################################
-### DJANGO GRAPPELLI                                                        ###
-###############################################################################
-GRAPPELLI_ADMIN_TITLE = "State Machine Admin"
-GRAPPELLI_AUTOCOMPLETE_LIMIT = 25
-# GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS
-GRAPPELLI_SWITCH_USER = True
-# GRAPPELLI_SWITCH_USER_ORIGINAL
-# GRAPPELLI_SWITCH_USER_TARGET
-# GRAPPELLI_CLEAN_INPUT_TYPES = False
-
-
-###############################################################################
-### DJANGO REST FRAMEWORK                                                   ###
-###############################################################################
-INSTALLED_APPS += (
-    "rest_framework",
-    "rest_framework.authtoken",
-)
-REST_FRAMEWORK = {
-    "DEFAULT_MODEL_SERIALIZER_CLASS":   "rest_framework.serializers.HyperlinkedModelSerializer",
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
-    "DEFAULT_RENDERER_CLASSES": (
-        "rest_framework.renderers.BrowsableAPIRenderer",
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework_jsonp.renderers.JSONPRenderer",
-    ),
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ),
-
-    "TEST_REQUEST_DEFAULT_FORMAT":  "json",
-    "TEST_REQUEST_RENDERER_CLASSES": (
-        "rest_framework.renderers.MultiPartRenderer",
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.TemplateHTMLRenderer"
-    ),
-}
-TOKEN_AUTHENTICATION_TYPE = "jwt"
-
-
-###############################################################################
-### AWS SNS                                                                 ###
-###############################################################################
-PRODUCTION_MODE = False
-
-SNS_ENABLED = config("SNS_ENABLED", True)
-
-AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", "toogo-production-dev")
-AWS_STORAGE_BUCKET_NAME_MIRROR = AWS_STORAGE_BUCKET_NAME + "-backups"
 
 
 ###############################################################################
 ### ASGI / WEBSOCKET                                                        ###
 ###############################################################################
-ASGI_APPLICATION = "service.routing.application"
+ASGI_APPLICATION = "server.routing.application"
 
 USE_REDIS_PUBSUB = config("USE_REDIS_PUBSUB", default=True, cast=bool)
 
@@ -379,14 +283,6 @@ CHANNEL_LAYERS = {
 }
 
 WEBSOCKET_STREAM_HANDLERS = {
-    "channel":      "service.handlers.ChannelStreamHandler",
+    "channel":      "server.handlers.ChannelStreamHandler",
     "ping":         "lib.handlers.PingStreamHandler",
-    # "pos_tender":   "sales.channels.POSTenderStreamHandler",
-    # "hub_request":  "organization.channels.HubStreamHandler",
-}
-
-MESSAGING_STREAM_HANDLERS = {
-    "channel_control":  "service.messaging.ControlStreamHandler",
-    "normal":           "service.messaging.FakeStreamHandler",
-    "test_harness":     "service.messaging.TestHarnessHandler",
 }

@@ -21,10 +21,6 @@ admin.autodiscover()
 
 
 urlpatterns = [
-    # re_path(r"^grappelli/", include("grappelli.urls")),
     re_path(r"^admin/", admin.site.urls),
-    re_path(r"^api/", include("api.urls")),
-    re_path(r"^api/v1/", include("api.v1.urls")),
-    # re_path(r"^api/v2/", include("api.v2.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()

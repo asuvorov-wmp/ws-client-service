@@ -1,33 +1,25 @@
-"""
-(C) 1995-2023 Epicor Software Corporation. All Rights Reserved.
-
-The copyright owner has not given any authority for any publication
-of this work.  This work contains valuable trade secrets of Epicor
-and must be maintained in confidence.  Use of this work is governed
-by the terms and conditions of a license agreement with Epicor.
-
-"""
-
 import _thread
+import json
 import logging
 
 import websocket
 
+from asgiref.sync import async_to_sync, sync_to_async  # pylint: disable=unused-import
 from django.conf import settings
-
-from lib.decorators import log_default
 
 
 logger = logging.getLogger(__name__)
 
 
-class EPAClient:
-    """Cloud EPA Client Interface.
+class CloudService:
+    """Cloud Service Client Interface.
 
     Attributes
     ----------
     BASE_API_URL            : str       Base URL.
     HEADERS                 : dict      Request Headers.
+
+    ws_client               : obj       Cloud Client Object.
 
     Methods
     -------
@@ -53,7 +45,6 @@ class EPAClient:
         "Content-Type":     "application/json",
     }
 
-    @log_default(my_logger=logger)
     def __init__(self, consumer=None):
         """Constructor.
 
@@ -78,7 +69,6 @@ class EPAClient:
         """Disconnect from WebSocket."""
         self.ws_client.close()
 
-    @log_default(my_logger=logger)
     def send_message(self, message):
         """Send the Message.
 
@@ -89,7 +79,11 @@ class EPAClient:
         """
         self.ws_client.send(message)
 
-    @log_default(my_logger=logger)
+    ###########################################################################
+    ###                                                                     ###
+    ### CALLBACK FUNCTIONS FOR WEBSOCKET CLIENT                             ###
+    ###                                                                     ###
+    ###########################################################################
     def __connect(self, url):
         """Connect to WebSocket.
 
@@ -105,12 +99,12 @@ class EPAClient:
 
         self.ws_client = websocket.WebSocketApp(
             url,
-            # on_ping=self.__on_ping,
-            # on_pong=self.__on_pong,
-            on_open=self.consumer._on_open if self.consumer else self.__on_open,
-            on_message=self.consumer._on_message if self.consumer else self.__on_message,
-            on_error=self.consumer._on_error if self.consumer else self.__on_error,
-            on_close=self.consumer._on_close if self.consumer else self.__on_close)
+            on_ping=self.__on_ping,
+            on_pong=self.__on_pong,
+            on_open=self.__on_open,
+            on_message=self.__on_message,
+            on_error=self.__on_error,
+            on_close=self.__on_close)
 
         # ---------------------------------------------------------------------
         # --- Set Dispatcher to automatic reconnecting.
@@ -123,7 +117,6 @@ class EPAClient:
         # rel.signal(2, rel.abort)  # Keyboard Interrupt.
         # rel.dispatch()
 
-    @log_default(my_logger=logger)
     def __on_ping(self, wsapp, message):
         """On Ping Handler.
 
@@ -134,7 +127,6 @@ class EPAClient:
 
         """
 
-    @log_default(my_logger=logger)
     def __on_pong(self, wsapp, message):
         """On Pong Handler.
 
@@ -145,7 +137,6 @@ class EPAClient:
 
         """
 
-    @log_default(my_logger=logger)
     def __on_open(self, wsapp):
         """On open Connection Handler.
 
@@ -156,9 +147,10 @@ class EPAClient:
         """
         # self.ws_client.send("{}")
 
-    @log_default(my_logger=logger)
     def __on_message(self, wsapp, message):
         """On Message received Handler.
+
+        Receive and process the Cloud EPA Event.
 
         Parameters
         ----------
@@ -166,8 +158,18 @@ class EPAClient:
         message             : str       Message.
 
         """
+        # ---------------------------------------------------------------------
+        # --- Initials.
+        # ---------------------------------------------------------------------
+        message = json.loads(message)
 
-    @log_default(my_logger=logger)
+        # ---------------------------------------------------------------------
+        # --- Process Cloud Event.
+        # ---------------------------------------------------------------------
+        self.sm.process_cloud_event(message)
+
+        async_to_sync(self.consumer.reply)(message)
+
     def __on_error(self, error, *args):
         """On Error received Handler.
 
@@ -177,7 +179,6 @@ class EPAClient:
 
         """
 
-    @log_default(my_logger=logger)
     def __on_close(self, wsapp, status_code, message):
         """On close Connection Handler.
 
