@@ -96,8 +96,6 @@ setup(
         "pylint==2.15.10",
         "pylint-django==2.5.3",
         "pytest==7.4.0",
-        "python-decouple==3.8",
-        "rel==0.4.8",
         "requests==2.28.2",
         "uvicorn[standard]",
         "websocket-client==1.5.1",

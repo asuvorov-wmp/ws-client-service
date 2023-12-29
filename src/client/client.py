@@ -17,8 +17,8 @@ class CloudService:
     Attributes
     ----------
     BASE_API_URL            : str       Base URL.
-    HEADERS                 : dict      Request Headers.
 
+    consumer                : obj       Websocket Consumer Object.
     ws_client               : obj       Cloud Client Object.
 
     Methods
@@ -39,11 +39,7 @@ class CloudService:
 
     """
 
-    BASE_API_URL = f"{settings.EPA_CLOUD_INSTANCE}/"
-    HEADERS = {
-        "Accept-Language":  "en",
-        "Content-Type":     "application/json",
-    }
+    BASE_API_URL = f"{settings.CLOUD_SERVICE_INSTANCE}/"
 
     def __init__(self, consumer=None):
         """Constructor.
@@ -93,9 +89,9 @@ class CloudService:
 
         """
         # ---------------------------------------------------------------------
-        # --- WebSocketApp Example is best for a long-lived Connection.
+        # --- `WebSocketApp` Example is the best for a long-lived Connection.
         # ---------------------------------------------------------------------
-        # websocket.enableTrace(True)
+        websocket.enableTrace(True)
 
         self.ws_client = websocket.WebSocketApp(
             url,
@@ -105,17 +101,7 @@ class CloudService:
             on_message=self.__on_message,
             on_error=self.__on_error,
             on_close=self.__on_close)
-
-        # ---------------------------------------------------------------------
-        # --- Set Dispatcher to automatic reconnecting.
-        #     3 Second reconnect Delay, if Connection dropped unexpectedly.
-        # ---------------------------------------------------------------------
         self.ws_client.run_forever()
-        # self.ws_client.run_forever(
-        #     dispatcher=rel,
-        #     reconnect=3)
-        # rel.signal(2, rel.abort)  # Keyboard Interrupt.
-        # rel.dispatch()
 
     def __on_ping(self, wsapp, message):
         """On Ping Handler.

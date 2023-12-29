@@ -26,9 +26,6 @@ from jwt.exceptions import (
 from client import CloudService
 
 
-logger = logging.getLogger(__name__)
-
-
 class MasterConsumer(AsyncJsonWebsocketConsumer):
     """Master Consumer.
 
@@ -49,8 +46,8 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
     disconnect()                        Disconnect.
     receive_json()                      Process Incoming JSON from Client.
     encode_json()                       Encode plain JSON to handle Payloads.
-    reply()                             Handler for `lib.channels.send_channel_message`.
-    cloud_reply()                       Handler for `lib.channels.send_channel_message`.
+    reply()                             Handler for `server.channels.send_channel_message`.
+    cloud_reply()                       Handler for `server.channels.send_channel_message`.
 
     """
 
@@ -80,13 +77,14 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
         await super().connect()
 
         # ---------------------------------------------------------------------
-        # --- Establish WebSocket Connection with Cloud Client.
+        # --- Establish WebSocket Connection with Cloud Service.
         # ---------------------------------------------------------------------
         try:
             self.ws_client = CloudService(self)
         except Exception as exc:
-            # if self.ws_client:
-            #     self.ws_client.disconnect()
+            if self.ws_client:
+                self.ws_client.disconnect()
+
             self.close()
 
             raise exc
@@ -100,9 +98,9 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
         except:
             pass
 
-        await self.reply(dict(
-            app_id=app_integration.app_id,
-            secret_key=app_integration.secret_key))
+        await self.reply({
+            "status":   "healthy",
+        })
 
     async def disconnect(self, code):
         """Disconnect.

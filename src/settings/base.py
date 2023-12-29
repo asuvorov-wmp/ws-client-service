@@ -3,32 +3,22 @@ import os.path
 
 from django.utils.translation import gettext_lazy as _
 
-from decouple import config
-
-
-###############################################################################
-### How does it work?
-### Decouple always searches for Options in this Order:
-### - Environment Variables;
-### - Repository: `settings.ini` or `.env` File;
-### - Default Argument, passed to Config.
-###############################################################################
 
 ###############################################################################
 ### BASIC SETTINGS                                                          ###
 ###############################################################################
 PRODUCT_VERSION = "0.0.0"
 
-DEBUG = config("DEBUG", default=False)
+DEBUG = bool(os.environ.get("DEBUG", False))
 DEBUG_TOOLBAR = True
 
 # PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",))
 
 # We have 6 Types of Environments: "local", "dev", "test", "int", "staging", and "prod".
-ENVIRONMENT = config("ENVIRONMENT", "dev")
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "dev")
 
-DJANGO_SETTINGS_MODULE = config("DJANGO_SETTINGS_MODULE", "settings.dev")
+DJANGO_SETTINGS_MODULE = os.environ.get("DJANGO_SETTINGS_MODULE", "settings.dev")
 
 ADMINS = (
     ("Artem Suvorov", "artem.suvorov@epicor.com"),
@@ -93,8 +83,8 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.DefaultStorageFinder",
 )
 
-SECRET_KEY = config("SECRET_KEY", default="@zew8t_wcz!qn9=8+hheltx@&b#!x@i6ores96lhbnobr3jp*c")
-SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
+SECRET_KEY = os.environ.get("SECRET_KEY", default="@zew8t_wcz!qn9=8+hheltx@&b#!x@i6ores96lhbnobr3jp*c")
+SECURE_SSL_REDIRECT = bool(os.environ.get("SECURE_SSL_REDIRECT", False))
 
 TEMPLATES = [
     {
@@ -258,17 +248,23 @@ AUTHENTICATION_BACKENDS = (
 
 
 ###############################################################################
+### SERVICE SETTINGS                                                        ###
+###############################################################################
+CLOUD_SERVICE_INSTANCE = os.environ.get("CLOUD_SERVICE_INSTANCE")
+
+
+###############################################################################
 ### ASGI / WEBSOCKET                                                        ###
 ###############################################################################
 ASGI_APPLICATION = "server.routing.application"
 
-USE_REDIS_PUBSUB = config("USE_REDIS_PUBSUB", default=True, cast=bool)
+USE_REDIS_PUBSUB = bool(os.environ.get("USE_REDIS_PUBSUB", True))
 
-REDIS_DEFAULT_CACHE_TTL = config("REDIS_DEFAULT_CACHE_TTL", default=60, cast=int)
-REDIS_TRANSACTION_CACHE_TTL = config("REDIS_TRANSACTION_CACHE_TTL", default=86400, cast=int)
-REDIS_TENDER_CACHE_TTL = config("REDIS_TENDER_CACHE_TTL", default=86400, cast=int)
-REDIS_SOCKET_TTL = config("REDIS_SOCKET_TTL", default=2, cast=int)
-REDIS_SOCKET_CONNECT_TTL = config("REDIS_SOCKET_CONNECT_TTL", default=2, cast=int)
+REDIS_DEFAULT_CACHE_TTL = int(os.environ.get("REDIS_DEFAULT_CACHE_TTL", 60))
+REDIS_TRANSACTION_CACHE_TTL = int(os.environ.get("REDIS_TRANSACTION_CACHE_TTL", 86400))
+REDIS_TENDER_CACHE_TTL = int(os.environ.get("REDIS_TENDER_CACHE_TTL", 86400))
+REDIS_SOCKET_TTL = int(os.environ.get("REDIS_SOCKET_TTL", 2))
+REDIS_SOCKET_CONNECT_TTL = int(os.environ.get("REDIS_SOCKET_CONNECT_TTL", 2))
 
 CHANNEL_LAYERS = {
     "default": {
