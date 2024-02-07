@@ -10,12 +10,7 @@ import httpx
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.module_loading import import_string
-from rest_framework.exceptions import (
-    AuthenticationFailed,
-    NotAuthenticated,
-    ValidationError)
 
-from channels.db import database_sync_to_async
 from channels.exceptions import StopConsumer
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
@@ -120,33 +115,28 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content: dict, **kwargs):
         """Process Incoming JSON from Client.
 
-        Need to validate the Token, and `perform_receive()` on the appropriate Stream Handler.
+        For Instance:
+
+        {
+            "command":      "authenticate",
+            "stream":       "channel",
+            "payload":      {
+                ...
+            }
+        }
+
+        Need to verify Request, and call `perform_receive()` on the appropriate Stream Handler.
         """
         # ---------------------------------------------------------------------
         # --- Initials (verify Request).
         # ---------------------------------------------------------------------
         try:
-            (
-                self.auth_token,
-                self.app_id,
-                self.device_id
-            ) = self.verify_request(content)
-        except NotAuthenticated as exc:
+            self.verify_request(content)
+        except Exception as exc:
             return await self.reply({
                 "stream":           "channel",
                 "payload": {
-                    "even_type":    UIEventType.ERROR,
-                    "message": {
-                        "detail":   exc.get_full_details(),
-                        "status":   exc.status_code,
-                    },
-                },
-            })
-        except ValueError as exc:
-            return await self.reply({
-                "stream":           "channel",
-                "payload": {
-                    "even_type":    UIEventType.ERROR,
+                    "even_type":    "error",
                     "message": {
                         "detail":   str(exc),
                         "status":   httpx.codes.INTERNAL_SERVER_ERROR,
@@ -157,43 +147,21 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
         # ---------------------------------------------------------------------
         # --- Manage Command.
         # ---------------------------------------------------------------------
-        request_start = time.perf_counter()
-
         try:
             await self.stream_handlers[content["stream"]].perform_receive(
                 content=content,
                 reply_channel=self.channel_name)
-        except (
-                KeyError,
-                DecodeError,
-                ExpiredSignatureError) as exc:
-
+        except Exception as exc:
             await self.reply({
                 "stream":           "channel",
                 "payload": {
-                    "even_type":    UIEventType.ERROR,
+                    "even_type":    "error",
                     "message": {
                         "detail":   str(exc),
                         "status":   httpx.codes.INTERNAL_SERVER_ERROR,
                     },
                 },
             })
-        except (
-                AuthenticationFailed,
-                NotAuthenticated,
-                ValidationError) as exc:
-            await self.reply({
-                "stream":           "channel",
-                "payload": {
-                    "even_type":    UIEventType.ERROR,
-                    "message": {
-                        "detail":   exc.get_full_details(),
-                        "status":   exc.status_code,
-                    },
-                },
-            })
-
-        request_stop = time.perf_counter()
 
     @classmethod
     async def encode_json(cls, content):
@@ -220,7 +188,7 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
     async def cloud_reply(self, message: dict) -> None:
         """Handler for `lib.channels.send_channel_message`.
 
-        Send the Message (Command) to the Cloud EPA.
+        Send the Message (Command) to the Cloud Service.
         """
         self.ws_client.send_message(json.dumps(message["payload"], cls=DjangoJSONEncoder))
 
