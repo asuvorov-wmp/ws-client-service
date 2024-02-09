@@ -98,10 +98,7 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def disconnect(self, code):
-        """Disconnect.
-
-        Do Clean-up and ask the Handlers to run their Disconnect.
-        """
+        """Disconnect. Do Clean-up and ask the Handlers to run their Disconnect."""
         super().disconnect(code)
 
         for handler in self.stream_handlers.values():
@@ -117,13 +114,13 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
 
         For Instance:
 
-        {
-            "command":      "authenticate",
-            "stream":       "channel",
-            "payload":      {
-                ...
+            {
+                "command":      "authenticate",
+                "stream":       "channel",
+                "payload":      {
+                    ...
+                }
             }
-        }
 
         Need to verify Request, and call `perform_receive()` on the appropriate Stream Handler.
         """
@@ -174,10 +171,7 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
     ###                                                                     ###
     ###########################################################################
     async def reply(self, message: dict) -> None:
-        """Handler for `lib.channels.send_channel_message`.
-
-        Send the Message (Command) to the Mobile Client.
-        """
+        """Send the Message (Command) to the Mobile Client."""
         # ---------------------------------------------------------------------
         # --- Wedge in the Channel Name, so the Client can log for tracing.
         # ---------------------------------------------------------------------
@@ -186,10 +180,7 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(message)
 
     async def cloud_reply(self, message: dict) -> None:
-        """Handler for `lib.channels.send_channel_message`.
-
-        Send the Message (Command) to the Cloud Service.
-        """
+        """Send the Message (Command) to the Cloud Service."""
         self.ws_client.send_message(json.dumps(message["payload"], cls=DjangoJSONEncoder))
 
     ###########################################################################
@@ -199,32 +190,4 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
     ###########################################################################
     @staticmethod
     def verify_request(content: dict):
-        """Verify Request.
-
-        Parameters
-        ----------
-        content             : dict      Request Content.
-
-        Returns
-        -------             : tuple
-
-        Raises
-        ------              NotAuthenticated
-                            ValueError
-        """
-        auth_token = content.get("auth_token")
-        if not auth_token:
-            raise NotAuthenticated("Auth Token is not provided")
-
-        app_id = content.get("app_id")
-        device_id = content.get("device_id")
-        if not (app_id and device_id):
-            raise ValueError("Missing mandatory Parameter(s)")
-
-        return auth_token, app_id, device_id
-
-    ###########################################################################
-    ###                                                                     ###
-    ### PRIVATE METHODS                                                     ###
-    ###                                                                     ###
-    ###########################################################################
+        """Verify Request."""

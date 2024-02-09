@@ -1,13 +1,3 @@
-"""
-(C) 1995-2023 Epicor Software Corporation. All Rights Reserved.
-
-The copyright owner has not given any authority for any publication
-of this work.  This work contains valuable trade secrets of Epicor
-and must be maintained in confidence.  Use of this work is governed
-by the terms and conditions of a license agreement with Epicor.
-
-"""
-
 from asgiref.sync import async_to_sync, sync_to_async
 
 
@@ -106,21 +96,7 @@ class ChannelStreamHandler(WebsocketStreamHandler):
         super().__init__( *args, **kwargs)
 
     async def perform_receive(self, content: dict, reply_channel: str=None, **kwargs) -> None:
-        """Ping simply responds like a Heartbeat.
-
-        Parameters
-        ----------
-        content             : dict      Message Content.
-        reply_channel       : str       Reply Channel Name.
-
-        """
-        # ---------------------------------------------------------------------
-        # --- Initials.
-        # ---------------------------------------------------------------------
-
-        # ---------------------------------------------------------------------
-        # --- Manage Command.
-        # ---------------------------------------------------------------------
+        """Parse and Manage Content."""
         if content["command"] == EPACommand.AUTHENTICATE:
             # -----------------------------------------------------------------
             # --- Authenticate Caller against Cloud EPA.

@@ -12,67 +12,29 @@ logger = logging.getLogger(__name__)
 
 
 class CloudService:
-    """Cloud Service Client Interface.
+    """Cloud Service Client Interface."""
 
-    Attributes
-    ----------
-    BASE_API_URL            : str       Base URL.
-
-    consumer                : obj       Websocket Consumer Object.
-    ws_client               : obj       Cloud Client Object.
-
-    Methods
-    -------
-    __init__()                          Constructor.
-
-    connect()                           Connect to WebSocket.
-    disconnect()                        Disconnect from WebSocket.
-    send_message()                      Send the Message.
-
-    __connect()                         Connect to WebSocket.
-    __on_ping()                         On Ping Handler.
-    __on_pong()                         On Pong Handler.
-    __on_open()                         On open Connection Handler.
-    __on_message()                      On Message received Handler.
-    __on_error()                        On Error received Handler.
-    __on_close()                        On close Connection Handler.
-
-    """
-
-    BASE_API_URL = f"{settings.CLOUD_SERVICE_INSTANCE}/"
+    BASE_API_URL = f"{settings.CLOUD_SERVICE_INSTANCE}/". # Base URL.
 
     def __init__(self, consumer=None):
-        """Constructor.
-
-        Parameters
-        ----------
-        consumer            : obj       Consumer Object.
-
-        """
+        """Constructor."""
         super().__init__()
 
-        self.consumer = consumer
-        self.ws_client = None
+        self.consumer = consumer  # Websocket Consumer Object.
+        self.ws_client = None     # Cloud Client Object.
+
         self.connect()
 
     def connect(self):
         """Connect to WebSocket."""
-        # self.__connect(self.BASE_API_URL)
-
         _thread.start_new_thread(self.__connect, (self.BASE_API_URL,))
 
     def disconnect(self):
         """Disconnect from WebSocket."""
         self.ws_client.close()
 
-    def send_message(self, message):
-        """Send the Message.
-
-        Parameters
-        ----------
-        message             : str       Message.
-
-        """
+    def send_message(self, message: str):
+        """Send the Message."""
         self.ws_client.send(message)
 
     ###########################################################################
@@ -80,17 +42,8 @@ class CloudService:
     ### CALLBACK FUNCTIONS FOR WEBSOCKET CLIENT                             ###
     ###                                                                     ###
     ###########################################################################
-    def __connect(self, url):
-        """Connect to WebSocket.
-
-        Parameters
-        ----------
-        url                 : str       WebSocket URL.
-
-        """
-        # ---------------------------------------------------------------------
-        # --- `WebSocketApp` Example is the best for a long-lived Connection.
-        # ---------------------------------------------------------------------
+    def __connect(self, url: str):
+        """Connect to WebSocket."""
         websocket.enableTrace(True)
 
         self.ws_client = websocket.WebSocketApp(
@@ -103,75 +56,26 @@ class CloudService:
             on_close=self.__on_close)
         self.ws_client.run_forever()
 
-    def __on_ping(self, wsapp, message):
-        """On Ping Handler.
+    def __on_ping(self, wsapp, message: str):
+        """On Ping Handler."""
 
-        Parameters
-        ----------
-        wsapp               : obj       WebSocket Client Object.
-        message             : str       Message.
-
-        """
-
-    def __on_pong(self, wsapp, message):
-        """On Pong Handler.
-
-        Parameters
-        ----------
-        wsapp               : obj       WebSocket Client Object.
-        message             : str       Message.
-
-        """
+    def __on_pong(self, wsapp, message: str):
+        """On Pong Handler."""
 
     def __on_open(self, wsapp):
-        """On open Connection Handler.
-
-        Parameters
-        ----------
-        wsapp               : obj       WebSocket Client Object.
-
-        """
+        """On open Connection Handler."""
         # self.ws_client.send("{}")
 
-    def __on_message(self, wsapp, message):
-        """On Message received Handler.
-
-        Receive and process the Cloud EPA Event.
-
-        Parameters
-        ----------
-        wsapp               : obj       WebSocket Client Object.
-        message             : str       Message.
-
-        """
-        # ---------------------------------------------------------------------
-        # --- Initials.
-        # ---------------------------------------------------------------------
+    def __on_message(self, wsapp, message: str):
+        """On Message received Handler."""
         message = json.loads(message)
 
-        # ---------------------------------------------------------------------
-        # --- Process Cloud Event.
-        # ---------------------------------------------------------------------
         self.sm.process_cloud_event(message)
 
         async_to_sync(self.consumer.reply)(message)
 
-    def __on_error(self, error, *args):
-        """On Error received Handler.
+    def __on_error(self, error: str, *args):
+        """On Error received Handler."""
 
-        Parameters
-        ----------
-        error               : str       Error Message.
-
-        """
-
-    def __on_close(self, wsapp, status_code, message):
-        """On close Connection Handler.
-
-        Parameters
-        ----------
-        wsapp               : obj       WebSocket Client Object.
-        status_code         : int       Status Code.
-        message             : str       Message.
-
-        """
+    def __on_close(self, wsapp, status_code: int, message: str):
+        """On close Connection Handler."""

@@ -1,13 +1,3 @@
-"""
-(C) 1995-2023 Epicor Software Corporation. All Rights Reserved.
-
-The copyright owner has not given any authority for any publication
-of this work.  This work contains valuable trade secrets of Epicor
-and must be maintained in confidence.  Use of this work is governed
-by the terms and conditions of a license agreement with Epicor.
-
-"""
-
 import os
 
 from os import path
@@ -45,11 +35,11 @@ def package_files(directory, home_dir):
 
 
 setup(
-    name="EPA State Machine",
+    name="Websocket Client-Server Demo",
     version="0.0.0",
     description="",
     long_description=long_description,
-    url="https://gitlab.toogoerp.net/pbotelho/epa_state_machine",
+    url="https://github.com/asuvorov-wmp/ws-client-service",
     author="",
     author_email="",
     classifiers=[

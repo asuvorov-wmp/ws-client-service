@@ -44,18 +44,18 @@ services:
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_HOST=localhost
-      - POSTGRES_USER=epa
-      - POSTGRES_USERNAME=epa
-      - POSTGRES_PASSWORD=epa
-      - POSTGRES_DB=epa
-      - DATABASE_ADMIN_USERNAME=epa
-      - TWX_DATABASE_USERNAME=epa
+      - POSTGRES_USER=ws_demo
+      - POSTGRES_USERNAME=ws_demo
+      - POSTGRES_PASSWORD=ws_demo
+      - POSTGRES_DB=ws_demo
+      - DATABASE_ADMIN_USERNAME=ws_demo
+      - TWX_DATABASE_USERNAME=ws_demo
       - TZ=UTC
       - PGTZ=UTC
     ports:
       - 5432:5432
     healthcheck:
-      test:     ["CMD", "pg_isready", "--username", "epa"]
+      test:     ["CMD", "pg_isready", "--username", "ws_demo"]
       interval: 1s
       retries:  120
 
