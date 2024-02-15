@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class CloudService:
     """Cloud Service Client Interface."""
 
-    BASE_API_URL = f"{settings.CLOUD_SERVICE_INSTANCE}/". # Base URL.
+    BASE_API_URL = f"{settings.CLOUD_SERVICE_INSTANCE}/"  # Base URL.
 
     def __init__(self, consumer=None):
         """Constructor."""

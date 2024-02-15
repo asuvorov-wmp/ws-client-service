@@ -172,11 +172,8 @@ class MasterConsumer(AsyncJsonWebsocketConsumer):
     ###########################################################################
     async def reply(self, message: dict) -> None:
         """Send the Message (Command) to the Mobile Client."""
-        # ---------------------------------------------------------------------
-        # --- Wedge in the Channel Name, so the Client can log for tracing.
-        # ---------------------------------------------------------------------
-        message["channel_name"] = self.channel_name
-
+        message["channel_name"] = self.channel_name     # Wedge in the Channel Name,
+                                                        # so the Client can log for tracing.
         await self.send_json(message)
 
     async def cloud_reply(self, message: dict) -> None:

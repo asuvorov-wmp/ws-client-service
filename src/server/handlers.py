@@ -1,5 +1,7 @@
 from asgiref.sync import async_to_sync, sync_to_async
 
+from .channels import send_channel_message
+
 
 class WebsocketStreamHandler:
     """Base Class to handle Websocket Streams.
@@ -96,66 +98,21 @@ class ChannelStreamHandler(WebsocketStreamHandler):
         super().__init__( *args, **kwargs)
 
     async def perform_receive(self, content: dict, reply_channel: str=None, **kwargs) -> None:
-        """Parse and Manage Content."""
-        if content["command"] == EPACommand.AUTHENTICATE:
-            # -----------------------------------------------------------------
-            # --- Authenticate Caller against Cloud EPA.
-            app_context = await sync_to_async(models.create_update_app_context)(
-                auth_token=self.consumer.auth_token,
-                app_id=self.consumer.app_id,
-                device_id=self.consumer.device_id,
-                reply_channel=reply_channel)
+        """Parse and manage the Content (Message)."""
+        if content["command"] == "some_command":
+            pass  # Do Something.
+        elif content["command"] == "another_command":
+            pass  # Do Something.
 
-            await sync_to_async(self.epa_wf.authenticate)(
-                app_context=app_context)
-
-        elif content["command"] == EPACommand.APP_VERSION_REQUEST:
-            # -----------------------------------------------------------------
-            # --- Request App Version Details from Cloud EPA.
-            workstation_device = await sync_to_async(models.get_workstation_device)(
-                device_id=self.consumer.device_id,
-                is_connected=True)
-
-            await sync_to_async(self.epa_wf.app_version_requested)(
-                workstation_device=workstation_device)
-
-        elif content["command"] == EPACommand.DEVICE_CLAIM:
-            # -----------------------------------------------------------------
-            # --- Claim Pinpad against Cloud EPA.
-            workstation_device = await sync_to_async(models.get_workstation_device)(
-                device_id=self.consumer.device_id,
-                device_agent_id=content.get("device_agent_id"))
-
-            await sync_to_async(self.epa_wf.claim_pinpad)(
-                workstation_device=workstation_device,
-                input_data=content)
-
-        elif content["command"] == EPACommand.DEVICE_RELEASE:
-            # -----------------------------------------------------------------
-            # --- Release Pinpad against Cloud EPA.
-            workstation_device = await sync_to_async(models.get_workstation_device)(
-                device_id=self.consumer.device_id,
-                is_connected=True)
-
-            await sync_to_async(self.epa_wf.release_pinpad)(workstation_device)
-
-        elif content["command"] == EPACommand.TRANSACTION_REQUEST:
-            # -----------------------------------------------------------------
-            # --- Initiate Transaction against Cloud EPA.
-            await sync_to_async(self.epa_sm.process_cloud_transaction)(
-                workstation_device=workstation_device,
-                input_data=content,
-                command=content["command"],
-                trx_type=content["transaction_type"],
-                send_command=True)
-
-        elif content["command"] == EPACommand.TRANSACTION_ABORT:
-            # -----------------------------------------------------------------
-            # --- Abort Transaction against Cloud EPA.
-            await sync_to_async(self.epa_sm.process_cloud_transaction)(
-                workstation_device=workstation_device,
-                command=content["command"],
-                send_command=True)
+        await self.send(content)
+        send_channel_message(
+            stream=stream,
+            reply_channel=(
+                workstation_device.reply_channel
+                if workstation_device
+                else app_context.reply_channel),
+            payload=message,
+            invokee="cloud.reply")
 
     async def perform_disconnect(self, reply_channel: str=None, code: str=None, **kwargs) -> None:
         """Override, if need to do something on Websocket Close.

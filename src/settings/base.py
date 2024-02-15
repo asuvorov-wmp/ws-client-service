@@ -250,7 +250,7 @@ AUTHENTICATION_BACKENDS = (
 ###############################################################################
 ### SERVICE SETTINGS                                                        ###
 ###############################################################################
-CLOUD_SERVICE_INSTANCE = os.environ.get("CLOUD_SERVICE_INSTANCE")
+CLOUD_SERVICE_INSTANCE = os.environ.get("CLOUD_SERVICE_INSTANCE", "wss://ws.postman-echo.com/raw")
 
 
 ###############################################################################
@@ -276,7 +276,13 @@ CHANNEL_LAYERS = {
     },
 }
 
+
+VALID_STREAM_NAMES = {
+    "CHANNEL":  "channel",
+    "PING":     "ping",
+}
+
 WEBSOCKET_STREAM_HANDLERS = {
-    "channel":      "server.handlers.ChannelStreamHandler",
-    "ping":         "server.handlers.PingStreamHandler",
+    VALID_STREAM_NAMES["CHANNEL"]:  "server.handlers.ChannelStreamHandler",
+    VALID_STREAM_NAMES["PING"]:     "server.handlers.PingStreamHandler",
 }

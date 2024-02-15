@@ -8,7 +8,3 @@ class ServerConfig(AppConfig):
 
     name = "server"
     verbose_name = "Server"
-
-    def ready(self):
-        """Docstring."""
-        import_module("server.tasks")

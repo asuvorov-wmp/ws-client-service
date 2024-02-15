@@ -8,7 +8,3 @@ class ClientConfig(AppConfig):
 
     name = "client"
     verbose_name = "Client"
-
-    def ready(self):
-        """Docstring."""
-        import_module("client.tasks")
