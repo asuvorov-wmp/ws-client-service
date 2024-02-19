@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     # --- 3rd Party Apps.
 
     # --- Project Apps.
+    "app",
     "client",
     "server",
 )

@@ -38,7 +38,7 @@ def log_channel_message(message: str, stream: str, reply_channel: str, payload: 
 
 
 def send_channel_message(
-        stream: str=settings.VALID_STREAM_NAMES["CHANNEL"],
+        stream: str,
         reply_channel: str,
         payload: dict,
         invokee: str="reply") -> None:

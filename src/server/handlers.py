@@ -1,5 +1,7 @@
 from asgiref.sync import async_to_sync, sync_to_async
 
+from django.conf import settings
+
 from .channels import send_channel_message
 
 
@@ -106,12 +108,9 @@ class ChannelStreamHandler(WebsocketStreamHandler):
 
         await self.send(content)
         send_channel_message(
-            stream=stream,
-            reply_channel=(
-                workstation_device.reply_channel
-                if workstation_device
-                else app_context.reply_channel),
-            payload=message,
+            stream=settings.VALID_STREAM_NAMES["CHANNEL"],
+            reply_channel=reply_channel,
+            payload=content,
             invokee="cloud.reply")
 
     async def perform_disconnect(self, reply_channel: str=None, code: str=None, **kwargs) -> None:
